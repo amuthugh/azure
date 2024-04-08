@@ -5,16 +5,16 @@
   <br>
 </h1>
 
+
 # Step by step
-``` 
 Create Resource group Vnet ad Sub-Net 
 
-```
+
 
 1. **Create a virtual network and subnet**
 
 *** Application Gateway Variables ***
-
+```
 export pipName=intel-dev-pip
 export appgwRgName=DevAgw-rg
 export appgwVnetName=dev-appgw-vnet
@@ -24,28 +24,42 @@ export appgwVnetPrefix=10.9.0.0/24
 export appgwSnetPrefix=10.9.0.0/26
 export wafPolicyName=dev-waf-policy
 
+```
+
 1.1. Resource group, Vnet and Subnet creation for Application Gateway
 
 1.1.1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
+```
 az group create --name $appgwRgName --location $location
+
+```
 
 1.1.2. If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
 
+```
 az network vnet create --resource-group $appgwRgName --name $appgwVnetName --address-prefixes $appgwVnetPrefix --subnet-name $appgwSnetName --subnet-prefix $appgwSnetName
 
-1.1.3 Create WAF policy
-az network application-gateway waf-policy create --name $wafPolicyName --resource-group $appgwRgName
+```
 
+1.1.3 Create WAF policy
+
+```
+az network application-gateway waf-policy create --name $wafPolicyName --resource-group $appgwRgName
+```
 1.1.4 Create public ip
+```
 az network public-ip create -n $pipName -g $appgwRgName -l $location --allocation-method Static --sku Standard
+```
 
 1.1.5. Create application gateway
+```
 az network application-gateway create -n $appgwRgName -l $location -g $appgwRgName --sku WAF_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 --waf-policy $wafPolicyName
+```
 
 1.2.1 Resource group, Vnet and Subnet creation for AKS
 
 *** AKS Variables ***
-
+```
 export rgName=IntelDevAks-rg 
 export location=centralindia
 export vnetName=gg-centralindia-vnet
@@ -54,16 +68,17 @@ export subnetName=gg-il-app01-subnet-01
 export subnetPrefix=10.10.0.0/26
 export aksName=gg-il-app01
 export nodeVmSize=Standard_B2ms
-
+```
 
 
 2.1.1 Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
+```
 az group create --name $rgName --location $location
-
+```
 2.2.2 If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
-
+```
 az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix
-
+```
 
 
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
