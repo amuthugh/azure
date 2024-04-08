@@ -56,6 +56,7 @@ az network public-ip create -n $pipName -g $appgwRgName -l $location --allocatio
 az network application-gateway create -n $appgwRgName -l $location -g $appgwRgName --sku WAF_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 --waf-policy $wafPolicyName
 ```
 
+
 1.2.1 Resource group, Vnet and Subnet creation for AKS
 
 *** AKS Variables ***
@@ -82,37 +83,21 @@ az network vnet create --resource-group $rgName --name $vnetName --address-prefi
 
 
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
+2.2.2 VNet Peering
 
 Deployed in different vnets
 AKS can be deployed in different virtual network from Application Gateway's virtual network, however, the two virtual networks must be peered together. When you create a virtual network peering between two virtual networks, a route is added by Azure for each address range within the address space of each virtual network a peering is created for.
 
-aksClusterName="<aksClusterName>"
-aksResourceGroup="<aksResourceGroup>"
-appGatewayName="<appGatewayName>"
-appGatewayResourceGroup="<appGatewayResourceGroup>"
+```
+# Create vnet peerings
+aksVnetId=$(az network vnet show -n $aksVnetName -g $rgName -o tsv --query "id")
+az network vnet peering create -n AppGWtoAKSVnetPeering -g $appgwRgName --vnet-name $appgwVnetName --remote-vnet $aksVnetId --allow-vnet-access
 
-# get aks vnet information
-nodeResourceGroup=$(az aks show -n $aksClusterName -g $aksResourceGroup -o tsv --query "nodeResourceGroup")
-aksVnetName=$(az network vnet list -g $nodeResourceGroup -o tsv --query "[0].name")
-aksVnetId=$(az network vnet show -n $aksVnetName -g $nodeResourceGroup -o tsv --query "id")
-
-# get gateway vnet information
-appGatewaySubnetId=$(az network application-gateway show -n $appGatewayName -g $appGatewayResourceGroup -o tsv --query "gatewayIpConfigurations[0].subnet.id")
-appGatewayVnetName=$(az network vnet show --ids $appGatewaySubnetId -o tsv --query "name")
-appGatewayVnetId=$(az network vnet show --ids $appGatewaySubnetId -o tsv --query "id")
-
-# set up bi-directional peering between aks and gateway vnet
-az network vnet peering create -n gateway2aks \
-    -g $appGatewayResourceGroup --vnet-name $appGatewayVnetName \
-    --remote-vnet $aksVnetId \
-    --allow-vnet-access
-az network vnet peering create -n aks2gateway \
-    -g $nodeResourceGroup --vnet-name $aksVnetName \
-    --remote-vnet $appGatewayVnetId \
-    --allow-vnet-access
-If you are using Azure CNI for network plugin with AKS, then you are good to go.
-
-If you are using Kubenet network plugin, then jump to Kubenet to setup the route table.
+appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --query "id")
+az network vnet peering create -n AKStoAppGWVnetPeering -g $rgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
+```
+    
+4. Associate the route table to Application Gateway's subnet
 
 With Kubenet
 When using Kubenet mode, Only nodes receive an IP address from subnet. Pod are assigned IP addresses from the PodIPCidr and a route table is created by AKS. This route table helps the packets destined for a POD IP reach the node which is hosting the pod.
@@ -186,6 +171,11 @@ az aks create \
 --pod-cidr 10.244.0.0/16 \
 --debug
 
+```
+# Enable Application Gateway Ingress Controller on AKS
+appgwId=$(az network application-gateway show -n $appgwName -g $rgName -o tsv --query "id")
+az aks enable-addons -n $aksName -g $rgName -a ingress-appgw --appgw-id $appgwId
+```
 
 5. Update AKS Cluster Status
 
