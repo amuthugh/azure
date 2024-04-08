@@ -7,7 +7,10 @@
 
 
 # Step by step
-Create Resource group Vnet ad Sub-Net 
+1. Create Application gateway
+2. Create AKS Cluster
+3. Configure AGIC configuration
+4.  
 
 
 
@@ -22,7 +25,9 @@ export appgwSnetName=dev-appgw-snet-01
 export location=centralindia
 export appgwVnetPrefix=10.9.0.0/24
 export appgwSnetPrefix=10.9.0.0/26
-export wafPolicyName=dev-waf-policy
+
+#Time being ignore : --waf-policy $wafPolicyName --sku WAF_v2 while creation
+#export wafPolicyName=dev-waf-policy
 
 ```
 
@@ -53,7 +58,7 @@ az network public-ip create -n $pipName -g $appgwRgName -l $location --allocatio
 
 1.1.5. Create application gateway
 ```
-az network application-gateway create -n $appgwRgName -l $location -g $appgwRgName --sku WAF_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 --waf-policy $wafPolicyName
+az network application-gateway create -n $appgwRgName -l $location -g $appgwRgName --sku Standard_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 
 ```
 
 
@@ -97,6 +102,75 @@ appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --qu
 az network vnet peering create -n AKStoAppGWVnetPeering -g $rgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
     
+
+
+
+
+2.2.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
+
+```
+SUBNET_ID=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
+```
+
+2.2.4. Create AKS cluster
+
+```
+az aks create \
+--resource-group $rgName \
+--name $aksName \
+--node-count 1 \
+--max-pods 80 \
+--network-plugin kubenet \
+--vnet-subnet-id ${SUBNET_ID} \
+--generate-ssh-keys -y \
+--enable-managed-identity \
+--node-vm-size $nodeVmSize \
+--enable-cluster-autoscaler \
+--min-count 1 \
+--max-count 2 \
+--pod-cidr 10.244.0.0/16 \
+--debug
+```
+
+```
+# Enable Application Gateway Ingress Controller on AKS
+appgwId=$(az network application-gateway show -n $appgwName -g $rgName -o tsv --query "id")
+az aks enable-addons -n $aksName -g $rgName -a ingress-appgw --appgw-id $appgwId
+```
+
+Step 3 — Assign network contributor role to AGIC addon Managed Identity
+```
+# Get application gateway id from AKS addon profile
+appGatewayId=$(az aks show -n agic-aks-cluster -g aks-rg-westus -o tsv --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId")
+
+```
+
+# Get Application Gateway subnet id
+appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
+echo $appGatewaySubnetId
+
+Output : /subscriptions/3344b61d-4f3a-425f-acdf-bb4f1f65789712/resourceGroups/aks-rg-westus/providers/Microsoft.Network/virtualNetworks/vNet_aks_uswest/subnets/agic-appgw-subnet
+
+*****OR****
+
+az network vnet subnet show \
+                           --resource-group aks-rg-westus \
+                           --vnet-name  vNet_aks_uswest \
+                           --name agic-appgw-subnet \
+                           --query id \
+                           -o tsv
+Ouput: /subscriptions/3344b61d-4f3a-1234-acdf-bb4f1f4567712/resourceGroups/aks-rg-westus/providers/Microsoft.Network/virtualNetworks/vNet_aks_uswest/subnets/agic-appgw-subnet
+
+# Get AGIC addon identity
+agicAddonIdentity=$(az aks show -n agic-aks-cluster -g aks-rg-westus -o tsv --query "addonProfiles.ingressApplicationGateway.identity.clientId")
+echo $agicAddonIdentity
+
+Output: ba4a6927-ddf1-40a9-9a11-fdc85c7be408
+
+# Assign network contributor role to AGIC addon Managed Identity to subnet that contains the Application Gateway
+
+az role assignment create --assignee $agicAddonIdentity --scope $appGatewaySubnetId --role "Network Contributor" 
+
 4. Associate the route table to Application Gateway's subnet
 
 With Kubenet
@@ -140,42 +214,6 @@ az aks show \
 
 
 
-
-
-1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
-az group create --name $rgName --location $location
-
-2. If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
-
-az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix
-
-3. Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
-
-SUBNET_ID=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
-
-4. Create AKS cluster
-
-az aks create \
---resource-group $rgName \
---name $aksName \
---node-count 2 \
---max-pods 80 \
---network-plugin kubenet \
---vnet-subnet-id ${SUBNET_ID} \
---generate-ssh-keys -y \
---enable-managed-identity \
---node-vm-size $nodeVmSize \
---enable-cluster-autoscaler \
---min-count 1 \
---max-count 2 \
---pod-cidr 10.244.0.0/16 \
---debug
-
-```
-# Enable Application Gateway Ingress Controller on AKS
-appgwId=$(az network application-gateway show -n $appgwName -g $rgName -o tsv --query "id")
-az aks enable-addons -n $aksName -g $rgName -a ingress-appgw --appgw-id $appgwId
-```
 
 5. Update AKS Cluster Status
 
