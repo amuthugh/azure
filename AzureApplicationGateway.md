@@ -10,13 +10,13 @@
 1. Create Application gateway
 2. Create AKS Cluster
 3. Configure AGIC configuration
-4.  
+   
 
 
-
-1. **Create a virtual network and subnet**
+1. Create Application gateway
 
 *** Application Gateway Variables ***
+
 ```
 export pipName=intel-dev-pip
 export appgwRgName=DevAgw-rg
@@ -101,11 +101,6 @@ az network vnet peering create -n AppGWtoAKSVnetPeering -g $appgwRgName --vnet-n
 appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --query "id")
 az network vnet peering create -n AKStoAppGWVnetPeering -g $rgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
-    
-
-
-
-
 2.2.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
 
 ```
@@ -146,7 +141,10 @@ appGatewayId=$(az aks show -n agic-aks-cluster -g aks-rg-westus -o tsv --query "
 ```
 
 # Get Application Gateway subnet id
+```
 appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
+
+#appGatewaySubnetId=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
 echo $appGatewaySubnetId
 
 Output : /subscriptions/3344b61d-4f3a-425f-acdf-bb4f1f65789712/resourceGroups/aks-rg-westus/providers/Microsoft.Network/virtualNetworks/vNet_aks_uswest/subnets/agic-appgw-subnet
@@ -160,17 +158,18 @@ az network vnet subnet show \
                            --query id \
                            -o tsv
 Ouput: /subscriptions/3344b61d-4f3a-1234-acdf-bb4f1f4567712/resourceGroups/aks-rg-westus/providers/Microsoft.Network/virtualNetworks/vNet_aks_uswest/subnets/agic-appgw-subnet
-
+```
+```
 # Get AGIC addon identity
 agicAddonIdentity=$(az aks show -n agic-aks-cluster -g aks-rg-westus -o tsv --query "addonProfiles.ingressApplicationGateway.identity.clientId")
 echo $agicAddonIdentity
 
 Output: ba4a6927-ddf1-40a9-9a11-fdc85c7be408
-
+```
 # Assign network contributor role to AGIC addon Managed Identity to subnet that contains the Application Gateway
-
+```
 az role assignment create --assignee $agicAddonIdentity --scope $appGatewaySubnetId --role "Network Contributor" 
-
+```
 4. Associate the route table to Application Gateway's subnet
 
 With Kubenet
@@ -184,7 +183,7 @@ If it exists, AGIC will try to assign the route table to the Application Gateway
 If AGIC doesn't have permissions to any of the above resources, the operation will fail and an error will be logged in the AGIC pod logs.
 
 This association can also be performed manually:
-
+```
 aksClusterName="<aksClusterName>"
 aksResourceGroup="<aksResourceGroup>"
 appGatewayName="<appGatewayName>"
@@ -201,6 +200,9 @@ appGatewaySubnetId=$(az network application-gateway show -n $appGatewayName -g $
 az network vnet subnet update \
 --ids $appGatewaySubnetId
 --route-table $routeTableId
+```
+
+
 
 
 
