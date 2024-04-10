@@ -32,15 +32,17 @@ export appgwSnetPrefix=10.9.0.0/26
 
 ```
 
-1.1. Resource group, Vnet and Subnet creation for Application Gateway
+## 1.1. Resource group, Vnet and Subnet creation for Application Gateway
 
-1.1.1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
+### 1.1.1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
+
 ```
 az group create --name $appgwRgName --location $location
 
 ```
 
-1.1.2. If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
+### 1.1.2. Create Vnet 
+If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
 
 ```
 az network vnet create --resource-group $appgwRgName --name $appgwVnetName --address-prefixes $appgwVnetPrefix --subnet-name $appgwSnetName --subnet-prefix $appgwSnetPrefix
@@ -51,24 +53,23 @@ Ignore : 1.1.3 Create WAF policy
 ```
 Ignore : az network application-gateway waf-policy create --name $wafPolicyName --resource-group $appgwRgName
 ```
-1.1.4 Create public ip
+### 1.1.4 Create public ip
 ```
 az network public-ip create -n $pipName -g $appgwRgName -l $location --allocation-method Static --sku Standard
 ```
 
-1.1.5. Create application gateway
+### 1.1.5. Create application gateway
 ```
 az network application-gateway create -n $appgwName -l $location -g $appgwRgName --sku Standard_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 
 ```
 
-1.1.6 Azure Application Gateway Stop & Start
+### 1.1.6 Azure Application Gateway Stop & Start
 ```
 export appgwRgName=DevAgw-rg
 export appgwName=DevAGW
 ```
 
 ```
-
 az network application-gateway stop --name $appgwName --resource-group $appgwRgName
 ```
 ```
@@ -76,7 +77,7 @@ az network application-gateway start --name $appgwName --resource-group $appgwRg
 ```
 # 2. Create AKS Cluster
 
-2.1 Resource group, Vnet and Subnet creation for AKS
+### 2.1 Resource group, Vnet and Subnet creation for AKS
 
 *** AKS Variables ***
 ```
@@ -101,7 +102,7 @@ az network vnet create --resource-group $aksRgName --name $aksVnetName --address
 ```
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
 
-#### 2.1.2 VNet Peering
+### 2.1.3 VNet Peering
 
 Deployed in different vnets
 AKS can be deployed in different virtual network from Application Gateway's virtual network, however, the two virtual networks must be peered together. When you create a virtual network peering between two virtual networks, a route is added by Azure for each address range within the address space of each virtual network a peering is created for.
@@ -119,7 +120,7 @@ appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --qu
 echo $appGWVnetId
 az network vnet peering create -n AKStoAppGWVnetPeering -g $aksRgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
-#### 2.1.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named aksSubnetId for later use.
+### 2.2.1 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named aksSubnetId for later use.
 
 ```
 aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-name $aksVnetName --name $aksSubnetName --query id -o tsv)
@@ -127,7 +128,7 @@ aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-nam
 echo $aksSubnetId
 ```
 
-### 2.2 Create AKS cluster
+### 2.2.2 Create AKS cluster
 
 ```
 az aks create \
@@ -165,7 +166,7 @@ az aks start --name $aksName --resource-group $aksRgName
 When you use an application gateway in a different resource group than the AKS cluster resource group, the managed identity ingressapplicationgateway-{AKSNAME} that is created must have Contributor and Reader roles set in the application gateway resource group.
 
 
-### 3.1 Enable Application Gateway Ingress Controller on AKS
+###  3.1 Enable Application Gateway Ingress Controller on AKS
 ```
 export appgwRgName=DevAgw-rg
 export appgwName=DevAGW
@@ -179,7 +180,7 @@ echo $appgwId
 az aks enable-addons -n $aksName -g $aksRgName -a ingress-appgw --appgw-id $appgwId
 ```
 
-# 3.2 Assign network contributor role to AGIC addon Managed Identity
+### 3.2 Assign network contributor role to AGIC addon Managed Identity
 
 ```
 export aksRgName=IntelDevAks-rg 
