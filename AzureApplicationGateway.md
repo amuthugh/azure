@@ -264,19 +264,16 @@ az network vnet subnet update --ids $appGatewaySubnetId --route-table $routeTabl
 ```
 
 Referances : 
+
 1)https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing
 2)https://www.linkedin.com/pulse/create-aks-cluster-application-gateway-agic-using-external-chandio-zjkuf/
 
 
-
+Other usefull commands :
 
 az aks list -g $aksRgName -o table
 
 az aks show -n $aksName -g $aksRgName --query apiServerAccessProfile.authorizedIpRanges
-
-
-
-Other usefull commands :
 
 Update AKS Cluster Status
 
