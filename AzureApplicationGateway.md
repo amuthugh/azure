@@ -247,6 +247,11 @@ appGatewaySubnetId=$(az network application-gateway show -n $appgwName -g $appgw
 echo $appGatewaySubnetId
 ```
 ```
+appGatewayId=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId")
+
+echo $appGatewayId
+```
+```
 appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
 
 echo $appGatewaySubnetId
