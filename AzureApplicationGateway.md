@@ -172,7 +172,40 @@ echo $appgwId
 az aks enable-addons -n $aksName -g $aksRgName -a ingress-appgw --appgw-id $appgwId
 ```
 
-# 3.2 Associate the route table to Application Gateway's subnet
+# 3.2 Assign network contributor role to AGIC addon Managed Identity
+
+```
+export aksRgName=IntelDevAks-rg 
+export aksName=gg-il-app01
+export appgwRgName=DevAgw-rg
+export appgwName=DevAGW
+```
+Get application gateway id from AKS addon profile
+```
+appGatewayId=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId")
+
+echo $appGatewayId
+```
+Get Application Gateway subnet id
+```
+appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
+
+echo $appGatewaySubnetId
+```
+
+Get AGIC addon identity
+```
+agicAddonIdentity=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.identity.clientId")
+
+echo $agicAddonIdentity
+
+```
+Assign network contributor role to AGIC addon identity to subnet that contains the Application Gateway
+```
+az role assignment create --assignee $agicAddonIdentity --scope $appGatewaySubnetId --role "Network Contributor"
+```
+
+### 3.3 Associate the route table to Application Gateway's subnet
 
 With Kubenet
 When using Kubenet mode, Only nodes receive an IP address from subnet. Pod are assigned IP addresses from the PodIPCidr and a route table is created by AKS. This route table helps the packets destined for a POD IP reach the node which is hosting the pod.
@@ -208,38 +241,7 @@ az network vnet subnet update \
 ```
 
 
-# 3.3 Assign network contributor role to AGIC addon Managed Identity
 
-```
-export aksRgName=IntelDevAks-rg 
-export aksName=gg-il-app01
-export appgwRgName=DevAgw-rg
-export appgwName=DevAGW
-```
-Get application gateway id from AKS addon profile
-```
-appGatewayId=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.config.effectiveApplicationGatewayId")
-
-echo $appGatewayId
-```
-Get Application Gateway subnet id
-```
-appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
-
-echo $appGatewaySubnetId
-```
-
-Get AGIC addon identity
-```
-agicAddonIdentity=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.identity.clientId")
-
-echo $agicAddonIdentity
-
-```
-Assign network contributor role to AGIC addon identity to subnet that contains the Application Gateway
-```
-az role assignment create --assignee $agicAddonIdentity --scope $appGatewaySubnetId --role "Network Contributor"
-```
 
 
 
