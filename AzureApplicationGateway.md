@@ -120,7 +120,7 @@ aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-nam
 echo $aksSubnetId
 ```
 
-# 2.2 Create AKS cluster
+## 2.2 Create AKS cluster
 
 ```
 az aks create \
