@@ -92,20 +92,24 @@ az group create --name $rgName --location $location
 ```
 az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix
 ```
-
-
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
+
 2.1.2 VNet Peering
 
 Deployed in different vnets
 AKS can be deployed in different virtual network from Application Gateway's virtual network, however, the two virtual networks must be peered together. When you create a virtual network peering between two virtual networks, a route is added by Azure for each address range within the address space of each virtual network a peering is created for.
 
+Create vnet peering APPGateway to AKS 
 ```
-# Create vnet peerings
 aksVnetId=$(az network vnet show -n $aksVnetName -g $rgName -o tsv --query "id")
+echo $aksVnetId
 az network vnet peering create -n AppGWtoAKSVnetPeering -g $appgwRgName --vnet-name $appgwVnetName --remote-vnet $aksVnetId --allow-vnet-access
+```
+Create vnet peering AKS to APPGateway
 
+```
 appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --query "id")
+echo $appGWVnetId
 az network vnet peering create -n AKStoAppGWVnetPeering -g $rgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
 2.1.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
