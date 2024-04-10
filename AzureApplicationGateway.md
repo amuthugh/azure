@@ -231,17 +231,22 @@ export aksName=gg-il-app01
 export appgwRgName=DevAgw-rg
 export appgwName=DevAGW
 ```
+ Find route table used by aks cluster
 ```
-# find route table used by aks cluster
 nodeResourceGroup=$(az aks show -n $aksName -g $aksRgName -o tsv --query "nodeResourceGroup")
+echo $nodeResourceGroup
+```
+```
 routeTableId=$(az network route-table list -g $nodeResourceGroup --query "[].id | [0]" -o tsv)
+echo $routeTableId
 ```
+Get the application gateway's subnet
 ```
-# get the application gateway's subnet
 appGatewaySubnetId=$(az network application-gateway show -n $appgwName -g $appgwRgName -o tsv --query "gatewayIpConfigurations[0].subnet.id")
+echo $appGatewaySubnetId
 ```
+Associate the route table to Application Gateway's subnet
 ```
-# associate the route table to Application Gateway's subnet
 az network vnet subnet update \
 --ids $appGatewaySubnetId
 --route-table $routeTableId
