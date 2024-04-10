@@ -63,7 +63,12 @@ az network application-gateway create -n $appgwName -l $location -g $appgwRgName
 
 1.1.6 Start stop Application gateway
 ```
-# Azure Application Gateway Stop & Start
+export appgwRgName=DevAgw-rg
+export appgwName=DevAGW
+```
+#### Azure Application Gateway Stop & Start
+```
+
 az network application-gateway stop --name $appgwName --resource-group $appgwRgName
 az network application-gateway start --name $appgwName --resource-group $appgwRgName
 ```
