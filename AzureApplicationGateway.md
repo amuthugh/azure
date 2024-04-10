@@ -268,6 +268,42 @@ Referances :
 1)https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing
 2)https://www.linkedin.com/pulse/create-aks-cluster-application-gateway-agic-using-external-chandio-zjkuf/
 
+Verify the Configurations
+
+kubectl config get-clusters
+kubectl config get-contexts
+kubectl config get-users
+kubectl config view 
+
+kubectl cluster-info
+kubectl get cs
+
+kubectl get nodes 
+kubectl get nodes  -o wide
+
+### Verify AKS Add On
+
+# List Kubernetes Deployments in kube-system namespace
+kubectl get deploy -n kube-system
+Observation:
+1. Should find the deployment with name "ingress-appgw-deployment"
+2. This is the Azure Application Gateway Ingress Controller Kubernetes Deployment Object
+
+# List Pods
+kubectl get pods -n kube-system
+
+# Describe Pod
+kubectl -n kube-system describe pod <AGIC-POD-NAME>
+kubectl -n kube-system describe pod ingress-appgw-deployment-55965f45cf-x28fm  
+Observation:
+1. Review the line where you can find ingress current version downloaded
+2. Pulling image "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.5.3"
+3. You can also run the below command to find the AppGW Ingress version
+kubectl get deploy ingress-appgw-deployment -o yaml -n kube-system | grep "image:"
+
+# Verify ingress-appgw pod Logs
+kubectl -n kube-system logs -f $(kubectl -n kube-system get po | egrep -o 'ingress-appgw-deployment[A-Za-z0-9-]+')
+
 
 Other usefull commands :
 
