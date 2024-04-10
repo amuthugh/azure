@@ -262,35 +262,24 @@ Associate the route table to Application Gateway's subnet
 az network vnet subnet update --ids $appGatewaySubnetId --route-table $routeTableId
 ```
 
+Referances : 
+1)https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing
+2)https://www.linkedin.com/pulse/create-aks-cluster-application-gateway-agic-using-external-chandio-zjkuf/
 
 
 
 
+az aks list -g $aksRgName -o table
 
-az aks list -g NEXUS -o table
-
-az aks show \
-    --resource-group NEXUS \
-    --name nexus \
-    --query apiServerAccessProfile.authorizedIpRanges
+az aks show -n $aksName -g $aksRgName --query apiServerAccessProfile.authorizedIpRanges
 
 
 
+Other usefull commands :
 
-5. Update AKS Cluster Status
+Update AKS Cluster Status
 
 AKS_RESOURCE_ID=$(az aks show --name $aksName --resource-group $aksRgName --query 'id' -o tsv)
 
 az resource update --ids ${AKS_RESOURCE_ID}
 
-/subscriptions/3e2cab00-53cf-469c-a248-2f4271c79483/resourceGroups/Sherwin/providers/Microsoft.ContainerService/managedClusters/gg-sy-sh-sbx-01
-
-AKS_RESOURCE_ID=$(az aks show --name gg-cls-app-01 --resource-group Synkrato-rg --query 'id' -o tsv)
-
-AKS_RESOURCE_ID=$(az aks show --name gg-sy-za-app-01 --resource-group Synkrato-rg --query 'id' -o tsv)
-
-az resource update --ids ${AKS_RESOURCE_ID}
-
-Referances : 
-1)https://learn.microsoft.com/en-us/azure/application-gateway/tutorial-ingress-controller-add-on-existing
-2)https://www.linkedin.com/pulse/create-aks-cluster-application-gateway-agic-using-external-chandio-zjkuf/
