@@ -259,9 +259,7 @@ echo $appGatewaySubnetId
 
 Associate the route table to Application Gateway's subnet
 ```
-az network vnet subnet update \
---ids $appGatewaySubnetId
---route-table $routeTableId
+az network vnet subnet update --ids $appGatewaySubnetId --route-table $routeTableId
 ```
 
 
