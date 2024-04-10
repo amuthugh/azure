@@ -73,12 +73,12 @@ az network application-gateway start --name $appgwName --resource-group $appgwRg
 
 *** AKS Variables ***
 ```
-export rgName=IntelDevAks-rg 
+export aksRgName=IntelDevAks-rg 
 export location=centralindia
-export vnetName=gg-centralindia-vnet
-export vnetAddPrefix=10.10.0.0/16
-export subnetName=gg-il-app01-subnet-01
-export subnetPrefix=10.10.0.0/26
+export aksVnetName=gg-centralindia-vnet
+export aksVnetAddPrefix=10.10.0.0/16
+export aksSubnetName=gg-il-app01-subnet-01
+export aksSubnetPrefix=10.10.0.0/26
 export aksName=gg-il-app01
 export nodeVmSize=Standard_B2ms
 ```
@@ -86,11 +86,11 @@ export nodeVmSize=Standard_B2ms
 
 2.1.1 Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
 ```
-az group create --name $rgName --location $location
+az group create --name $aksRgName --location $location
 ```
 2.1.2 If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
 ```
-az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix
+az network vnet create --resource-group $aksRgName --name $aksVnetName --address-prefixes $aksVnetAddPrefix --subnet-name $aksSubnetName --subnet-prefix $aksSubnetPrefix
 ```
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
 
@@ -101,7 +101,7 @@ AKS can be deployed in different virtual network from Application Gateway's virt
 
 Create vnet peering APPGateway to AKS 
 ```
-aksVnetId=$(az network vnet show -n $aksVnetName -g $rgName -o tsv --query "id")
+aksVnetId=$(az network vnet show -n $aksVnetName -g $aksRgName -o tsv --query "id")
 echo $aksVnetId
 az network vnet peering create -n AppGWtoAKSVnetPeering -g $appgwRgName --vnet-name $appgwVnetName --remote-vnet $aksVnetId --allow-vnet-access
 ```
@@ -110,19 +110,19 @@ Create vnet peering AKS to APPGateway
 ```
 appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --query "id")
 echo $appGWVnetId
-az network vnet peering create -n AKStoAppGWVnetPeering -g $rgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
+az network vnet peering create -n AKStoAppGWVnetPeering -g $aksRgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
 2.1.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
 
 ```
-SUBNET_ID=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
+SUBNET_ID=$(az network vnet subnet show --resource-group $aksRgName --vnet-name $aksVnetName --name $aksSubnetName --query id -o tsv)
 ```
 
 # 2.2 Create AKS cluster
 
 ```
 az aks create \
---resource-group $rgName \
+--resource-group $aksRgName \
 --name $aksName \
 --node-count 1 \
 --max-pods 80 \
@@ -145,7 +145,7 @@ az aks create \
 # 3.1 Enable Application Gateway Ingress Controller on AKS
 ```
 appgwId=$(az network application-gateway show -n $appgwName -g $appgwRgName -o tsv --query "id")
-az aks enable-addons -n $aksName -g $rgName -a ingress-appgw --appgw-id $appgwId
+az aks enable-addons -n $aksName -g $aksRgName -a ingress-appgw --appgw-id $appgwId
 ```
 
 # 3.2 Assign network contributor role to AGIC addon Managed Identity
@@ -158,7 +158,7 @@ appGatewayId=$(az aks show -n agic-aks-cluster -g aks-rg-westus -o tsv --query "
 # Get Application Gateway subnet id
 appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
 
-#appGatewaySubnetId=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
+#appGatewaySubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-name $aksVnetName --name $aksSubnetName --query id -o tsv)
 echo $appGatewaySubnetId
 
 Output : /subscriptions/3344b61d-4f3a-425f-acdf-bb4f1f65789712/resourceGroups/aks-rg-westus/providers/Microsoft.Network/virtualNetworks/vNet_aks_uswest/subnets/agic-appgw-subnet
@@ -233,7 +233,7 @@ az aks show \
 
 5. Update AKS Cluster Status
 
-AKS_RESOURCE_ID=$(az aks show --name $aksName --resource-group $rgName --query 'id' -o tsv)
+AKS_RESOURCE_ID=$(az aks show --name $aksName --resource-group $aksRgName --query 'id' -o tsv)
 
 az resource update --ids ${AKS_RESOURCE_ID}
 
