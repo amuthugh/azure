@@ -62,14 +62,11 @@ az network application-gateway create -n $appgwName -l $location -g $appgwRgName
 ```
 
 1.1.6 Start stop Application gateway
-
-# Application Gateway Stop & Start
-In portal, go to Overview Tab and click on "STOP"
-
-# Azure Application Gateway STOP
+```
+# Azure Application Gateway Stop & Start
 az network application-gateway stop --name $appgwName --resource-group $appgwRgName
 az network application-gateway start --name $appgwName --resource-group $appgwRgName
-
+```
 # 2. Create AKS Cluster
 
 2.1 Resource group, Vnet and Subnet creation for AKS
