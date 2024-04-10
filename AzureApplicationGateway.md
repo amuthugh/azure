@@ -75,9 +75,9 @@ az network application-gateway start --name $appgwName --resource-group $appgwRg
 ```
 export aksRgName=IntelDevAks-rg
 export aksName=gg-il-app01
-export location=centralindia
 export aksVnetName=gg-centralindia-vnet
 export aksSubnetName=gg-il-app01-subnet-01
+export location=centralindia
 export aksVnetAddPrefix=10.10.0.0/1
 export aksSubnetPrefix=10.10.0.0/26
 export nodeVmSize=Standard_B2ms
