@@ -242,9 +242,16 @@ echo $routeTableId
 ```
 Get the application gateway's subnet
 ```
+### Not fetching the ID Ignore
 appGatewaySubnetId=$(az network application-gateway show -n $appgwName -g $appgwRgName -o tsv --query "gatewayIpConfigurations[0].subnet.id")
 echo $appGatewaySubnetId
 ```
+```
+appGatewaySubnetId=$(az network application-gateway show --ids $appGatewayId -o tsv --query "gatewayIPConfigurations[0].subnet.id")
+
+echo $appGatewaySubnetId
+```
+
 Associate the route table to Application Gateway's subnet
 ```
 az network vnet subnet update \
