@@ -61,15 +61,17 @@ az network public-ip create -n $pipName -g $appgwRgName -l $location --allocatio
 az network application-gateway create -n $appgwName -l $location -g $appgwRgName --sku Standard_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 
 ```
 
-1.1.6 Start stop Application gateway
+1.1.6 Azure Application Gateway Stop & Start
 ```
 export appgwRgName=DevAgw-rg
 export appgwName=DevAGW
 ```
-#### Azure Application Gateway Stop & Start
+
 ```
 
 az network application-gateway stop --name $appgwName --resource-group $appgwRgName
+```
+```
 az network application-gateway start --name $appgwName --resource-group $appgwRgName
 ```
 # 2. Create AKS Cluster
