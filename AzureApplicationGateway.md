@@ -20,6 +20,7 @@
 ```
 export pipName=intel-dev-pip
 export appgwRgName=DevAgw-rg
+export appgwName=DevAGW
 export appgwVnetName=dev-appgw-vnet
 export appgwSnetName=dev-appgw-snet-01
 export location=centralindia
@@ -57,7 +58,7 @@ az network public-ip create -n $pipName -g $appgwRgName -l $location --allocatio
 
 1.1.5. Create application gateway
 ```
-az network application-gateway create -n $appgwRgName -l $location -g $appgwRgName --sku Standard_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 
+az network application-gateway create -n $appgwName -l $location -g $appgwRgName --sku Standard_v2 --public-ip-address $pipName --vnet-name $appgwVnetName --subnet $appgwSnetName --priority 100 
 ```
 
 # 2. Create AKS Cluster
