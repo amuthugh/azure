@@ -73,13 +73,13 @@ az network application-gateway start --name $appgwName --resource-group $appgwRg
 
 *** AKS Variables ***
 ```
-export aksRgName=IntelDevAks-rg 
+export aksRgName=IntelDevAks-rg
+export aksName=gg-il-app01
 export location=centralindia
 export aksVnetName=gg-centralindia-vnet
-export aksVnetAddPrefix=10.10.0.0/16
 export aksSubnetName=gg-il-app01-subnet-01
+export aksVnetAddPrefix=10.10.0.0/1
 export aksSubnetPrefix=10.10.0.0/26
-export aksName=gg-il-app01
 export nodeVmSize=Standard_B2ms
 ```
 
@@ -116,6 +116,8 @@ az network vnet peering create -n AKStoAppGWVnetPeering -g $aksRgName --vnet-nam
 
 ```
 aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-name $aksVnetName --name $aksSubnetName --query id -o tsv)
+
+echo $aksSubnetId
 ```
 
 # 2.2 Create AKS cluster
@@ -137,8 +139,17 @@ az aks create \
 --pod-cidr 10.244.0.0/16 \
 --debug
 ```
-
-
+# 2.3 Start and Stop AKS Cluster
+```
+export aksRgName=IntelDevAks-rg
+export aksName=gg-il-app01
+```
+```
+az aks stop --name $aksName --resource-group $aksRgName
+```
+```
+az aks start --name $aksName --resource-group $aksRgName
+```
 
 # 3. Configure AGIC in AKS
 
@@ -219,6 +230,7 @@ Get AGIC addon identity
 agicAddonIdentity=$(az aks show -n $aksName -g $aksRgName -o tsv --query "addonProfiles.ingressApplicationGateway.identity.clientId")
 
 echo $agicAddonIdentity
+
 ```
 Assign network contributor role to AGIC addon identity to subnet that contains the Application Gateway
 ```
