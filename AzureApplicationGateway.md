@@ -94,7 +94,7 @@ az network vnet create --resource-group $aksRgName --name $aksVnetName --address
 ```
 https://azure.github.io/application-gateway-kubernetes-ingress/how-tos/networking/
 
-2.1.2 VNet Peering
+#### 2.1.2 VNet Peering
 
 Deployed in different vnets
 AKS can be deployed in different virtual network from Application Gateway's virtual network, however, the two virtual networks must be peered together. When you create a virtual network peering between two virtual networks, a route is added by Azure for each address range within the address space of each virtual network a peering is created for.
@@ -112,7 +112,7 @@ appGWVnetId=$(az network vnet show -n $appgwVnetName -g $appgwRgName -o tsv --qu
 echo $appGWVnetId
 az network vnet peering create -n AKStoAppGWVnetPeering -g $aksRgName --vnet-name $aksVnetName --remote-vnet $appGWVnetId --allow-vnet-access
 ```
-2.1.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named aksSubnetId for later use.
+#### 2.1.3 Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named aksSubnetId for later use.
 
 ```
 aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-name $aksVnetName --name $aksSubnetName --query id -o tsv)
@@ -120,7 +120,7 @@ aksSubnetId=$(az network vnet subnet show --resource-group $aksRgName --vnet-nam
 echo $aksSubnetId
 ```
 
-## 2.2 Create AKS cluster
+### 2.2 Create AKS cluster
 
 ```
 az aks create \
@@ -139,7 +139,7 @@ az aks create \
 --pod-cidr 10.244.0.0/16 \
 --debug
 ```
-# 2.3 Start and Stop AKS Cluster
+### 2.3 Start and Stop AKS Cluster
 ```
 export aksRgName=IntelDevAks-rg
 export aksName=gg-il-app01
@@ -153,19 +153,23 @@ az aks start --name $aksName --resource-group $aksRgName
 
 # 3. Configure AGIC in AKS
 
-# Important
+#### Important
 
 When you use an application gateway in a different resource group than the AKS cluster resource group, the managed identity ingressapplicationgateway-{AKSNAME} that is created must have Contributor and Reader roles set in the application gateway resource group.
 
 
-# 3.1 Enable Application Gateway Ingress Controller on AKS
+### 3.1 Enable Application Gateway Ingress Controller on AKS
+```
+export appgwRgName=DevAgw-rg
+export appgwName=DevAGW
+```
+
 ```
 appgwId=$(az network application-gateway show -n $appgwName -g $appgwRgName -o tsv --query "id")
+echo $appgwId
+```
+```
 az aks enable-addons -n $aksName -g $aksRgName -a ingress-appgw --appgw-id $appgwId
-```
-```
-appgwId=$(az network application-gateway show -n myApplicationGateway -g myResourceGroup -o tsv --query "id") 
-az aks enable-addons -n myCluster -g myResourceGroup -a ingress-appgw --appgw-id $appgwId
 ```
 
 # 3.2 Associate the route table to Application Gateway's subnet
