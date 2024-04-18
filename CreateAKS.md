@@ -1,24 +1,26 @@
+AKS Instance creation in e8efc621-ec35 new subscription
 
+1. Make sure you have subscription details to connect
+2. Create Resource group
+3. Create VNet and Subnet
+4. Create AKS cluster
+5. Connect MongoDB through Vnet peering
+
+   
 **Create a virtual network and subnet**
 ```
-export rgName=Synkrato-rg 
+export rgName=Sherwin-rg 
 export location=centralus
-export vnetName=gg-centralus-vnet
-export vnetAddPrefix=10.12.0.0/16
-export subnetName=gg-sy-app01-subnet-01
+export vnetName=gg-westus3-vnet
+export vnetAddPrefix=10.10.0.0/16
+export subnetName=gg-sy-sn-subnet-01
 export subnetPrefix=10.12.0.0/24
-export aksName=gg-sy-app-01
-export nodeVmSize=Standard_D4s_v4
-
-export pipName=dev-pip
-export appgwVnetName=dev-appgw-vnet
-export appgwSnetName=dev-appgw-snet-01
-export appgwName=dev-appgw
-export wafPolicyName=dev-waf-policy
+export aksName=gg-sy-sn-app-01
+export nodeVmSize=Standard_D4s_v5
 
 ```
 
-1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command.
+1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command. Location name can be find here :  https://gist.github.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8
 az group create --name $rgName --location $location
 
 2. If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
