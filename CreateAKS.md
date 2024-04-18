@@ -10,7 +10,7 @@ AKS Instance creation in e8efc621-ec35 new subscription
 **Create a virtual network and subnet**
 ```
 export rgName=Sherwin-rg 
-export location=centralus
+export location=westus3
 export vnetName=gg-westus3-vnet
 export vnetAddPrefix=10.10.0.0/16
 export subnetName=gg-sy-sn-subnet-01
