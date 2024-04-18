@@ -21,18 +21,23 @@ export nodeVmSize=Standard_D4s_v5
 ```
 
 1. Create a resource group using the [az group create](https://learn.microsoft.com/en-us/cli/azure/group#az_group_create) command. Location name can be find here :  https://gist.github.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8
+```
 az group create --name $rgName --location $location
-
+```
 2. If you don't have an existing virtual network and subnet to use, create these network resources using the [az network vnet create](https://learn.microsoft.com/en-us/cli/azure/network/vnet#az_network_vnet_create) command. The following example command creates a virtual network named myAKSVnet with the address prefix of 192.168.0.0/16 and a subnet named myAKSSubnet with the address prefix 192.168.1.0/24:
 
+```
 az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix
+
+```
 
 3. Get the subnet resource ID using the [az network vnet subnet show](https://learn.microsoft.com/en-us/cli/azure/network/vnet/subnet#az_network_vnet_subnet_show) command and store it as a variable named SUBNET_ID for later use.
 
+```
 SUBNET_ID=$(az network vnet subnet show --resource-group $rgName --vnet-name $vnetName --name $subnetName --query id -o tsv)
-
+```
 4. Create AKS cluster
-
+```
 az aks create \
 --resource-group $rgName \
 --name $aksName \
@@ -48,6 +53,7 @@ az aks create \
 --max-count 2 \
 --pod-cidr 10.244.0.0/16 \
 --debug
+```
 
 5. Update AKS Cluster Status
 
