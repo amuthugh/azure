@@ -16,7 +16,7 @@ export vnetName=gg-westus3-vnet
 export vnetAddPrefix=10.10.0.0/16
 export subnetName=gg-sy-sn-subnet-01
 export subnetPrefix=10.10.0.0/24
-export aksName=gg-sy-sy-app-01
+export aksName=gg-sy-sh-app-01
 export nodeVmSize=Standard_D4s_v5
 export tagsSn="product=synkrato customer=Sherwin environment=PROD hasNexus=No"
 ```
