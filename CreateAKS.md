@@ -9,6 +9,7 @@ AKS Instance creation in e8efc621-ec35 new subscription
    
 **Create a virtual network and subnet**
 ```
+az account set --subscription e8efc621-ec35-4819-9135-8c5b3dc0204d
 export rgName=Sherwin-rg 
 export location=westus3
 export vnetName=gg-westus3-vnet
