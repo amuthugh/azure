@@ -59,7 +59,7 @@ az aks create \
 --min-count 1 \
 --max-count 2 \
 --pod-cidr 10.244.0.0/16 \
---debug
+--debug \
 --tags $tagsSn
 ```
 
