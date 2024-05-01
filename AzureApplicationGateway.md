@@ -1,17 +1,13 @@
 <h1 align="center">
   <br>
-  Aks and Application Gateway Ingress Controller configration 
-  
+  Aks and Application Gateway Ingress Controller configration
   <br>
 </h1>
 
-
 # Step by step
-1. Create Application gateway
-2. Create AKS Cluster
-3. Configure AGIC configuration
-   
-
+1. [Create Application gateway](https://github.com/amuthugh/azure/blob/main/AzureApplicationGateway.md#1-create-application-gateway)
+2. [Create AKS Cluster](https://github.com/amuthugh/azure/blob/main/AzureApplicationGateway.md#2-create-aks-cluster)
+3. [Configure AGIC configuration](https://github.com/amuthugh/azure/blob/main/AzureApplicationGateway.md#3-configure-agic-in-aks)
 
 ### 1. Create Application gateway
 
