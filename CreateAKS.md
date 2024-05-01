@@ -21,7 +21,7 @@ export nodeVmSize=Standard_D4s_v5
 export tagsSn="product=synkrato customer=Sherwin environment=PROD hasNexus=No"
 ```
 ```
-export group=/subscriptions/e8efc621-ec35-4819-9135-8c5b3dc0204d/resourceGroups/Sherwin-rg
+export group=/subscriptions/#######/resourceGroups/Sherwin-rg
 
 az tag update --resource-id $group --operation Merge --tags $tagsSn
 
@@ -69,7 +69,7 @@ AKS_RESOURCE_ID=$(az aks show --name $aksName --resource-group $rgName --query '
 
 az resource update --ids ${AKS_RESOURCE_ID}
 
-/subscriptions/3e2cab00-53cf-469c-a248-2f4271c79483/resourceGroups/Sherwin/providers/Microsoft.ContainerService/managedClusters/gg-sy-sh-sbx-01
+/subscriptions/####/resourceGroups/Sherwin/providers/Microsoft.ContainerService/managedClusters/gg-sy-sh-sbx-01
 
 AKS_RESOURCE_ID=$(az aks show --name gg-cls-app-01 --resource-group Synkrato-rg --query 'id' -o tsv)
 
