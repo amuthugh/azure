@@ -6,8 +6,8 @@
 
 # Step by step
 1. [Create Application gateway](/AzureApplicationGateway.md#1-create-application-gateway)
-2. [Create AKS Cluster](https://github.com/amuthugh/azure/blob/main/AzureApplicationGateway.md#2-create-aks-cluster)
-3. [Configure AGIC configuration](https://github.com/amuthugh/azure/blob/main/AzureApplicationGateway.md#3-configure-agic-in-aks)
+2. [Create AKS Cluster](/AzureApplicationGateway.md#2-create-aks-cluster)
+3. [Configure AGIC configuration](/AzureApplicationGateway.md#3-configure-agic-in-aks)
 
 ### 1. Create Application gateway
 
