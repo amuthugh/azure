@@ -9,7 +9,7 @@ AKS Instance creation in e8efc621-ec35 new subscription
    
 **Create a virtual network and subnet**
 ```
-az account set --6b2afb13-6afc-475a-b353-6e3deeb1d137 
+az account set --subscription 6b2afb13-6afc-475a-b353-6e3deeb1d137
 export rgName=gg-sy-rnd-central-us-rg
 export location=centralus 
 export vnetName=gg-sy-rnd-central-us-vnet
