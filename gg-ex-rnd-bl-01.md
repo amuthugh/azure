@@ -15,7 +15,7 @@ AKS Instance creation in e8efc621-ec35 new subscription
 ```
 az account set --subscription d16a7c0e-f05a-4b10-a60f-72f7c3843111
 export rgName=gg-ex-rnd-central-in-rg
-export location=centralin 
+export location=centralindia 
 export vnetName=gg-ex-rnd-central-in-vnet
 export vnetAddPrefix=10.15.0.0/20
 export subnetName=gg-ex-rnd-dev-01-subnet
