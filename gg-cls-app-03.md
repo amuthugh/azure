@@ -1,0 +1,1 @@
+gg-cls-app-03	Synkrato-Zebra Subscription : 0095b3e5-a31e-42af-aa85-adc4e6fa8ea9	gg-sy-prod-east-us2-rg	eastus2	gg-sy-prod-east-us2-vnet	10.14.16.0/20	gg-cls-app-03-subnet	10.14.16.0/26	Standard_D4s_v5	product=Synkrato customer=Zebra environment=PROD,DR hasNexus=No applications=CLS,Synkrato
