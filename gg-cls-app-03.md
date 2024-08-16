@@ -1,6 +1,3 @@
-gg-cls-app-03			Standard_D4s_v5	product=Synkrato customer=Zebra environment=PROD,DR hasNexus=No applications=CLS,Synkrato
-
-
 AKS Instance creation in e8efc621-ec35 new subscription
 
 1. Make sure you have subscription details to connect
