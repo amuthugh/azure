@@ -1,0 +1,1 @@
+gg-ex-rnd-app-01	Exto - R&D Subscription : d16a7c0e-f05a-4b10-a60f-72f7c3843111	Not-Provisioned	gg-ex-rnd-central-us-rg	centralus	gg-ex-rnd-central-us-vnet	10.9.16.0/20	gg-ex-rnd-app-01-subnet	10.9.16.64/26	Standard_D2as_v5	product=Exto customer=exto environment=Non-Prod hasNexus=No application=exto-platform, Bolo
