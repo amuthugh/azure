@@ -12,9 +12,9 @@ az account set --subscription d16a7c0e-f05a-4b10-a60f-72f7c3843111
 export rgName=gg-ex-rnd-central-us-rg
 export location=centralus 
 export vnetName=gg-ex-rnd-central-us-vnet
-export vnetAddPrefix=10.15.16.0/20
+export vnetAddPrefix=10.9.16.0/20
 export subnetName=gg-ex-uat-pl-01-subnet
-export subnetPrefix=10.15.16.0/26
+export subnetPrefix=10.9.16.0/26
 export aksName=gg-ex-uat-pl-01
 export nodeVmSize=Standard_D2as_v5
 export tagsSn="product=Exto customer=exto environment=Non-Prod hasNexus=No application=exto-platform"
