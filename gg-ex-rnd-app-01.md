@@ -57,7 +57,7 @@ az aks create \
 --node-vm-size $nodeVmSize \
 --enable-cluster-autoscaler \
 --min-count 1 \
---max-count 2 \
+--max-count 1 \
 --pod-cidr 10.244.0.0/16 \
 --debug \
 --tags $tagsSn
