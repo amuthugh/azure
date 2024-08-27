@@ -70,3 +70,6 @@ AKS_RESOURCE_ID=$(az aks show --name gg-cls-app-01 --resource-group Synkrato-rg 
 AKS_RESOURCE_ID=$(az aks show --name gg-sy-za-app-01 --resource-group Synkrato-rg --query 'id' -o tsv)
 
 az resource update --ids ${AKS_RESOURCE_ID}
+
+
+cli.azure.cli.core.sdk.policies: {"error":{"code":"PrincipalNotFound","message":"Principal c3556a780c1d48efa7537ecfc2ec854d does not exist in the directory 6f292041-81af-4175-8575-985683babb87. Check that you have the correct principal ID. If you are creating this principal and then immediately assigning a role, this error might be related to a replication delay. In this case, set the role assignment principalType property to a value, such as ServicePrincipal, User, or Group.  See https://aka.ms/docs-principaltype"}}
