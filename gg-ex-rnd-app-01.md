@@ -34,7 +34,7 @@ az network vnet create --resource-group $rgName --name $vnetName --address-prefi
 
 If Vnet already created, subnet will be created using the below command,
 ```
-az network vnet subnet create --name $subnetName --resource-group $rgName --vnet-name $vnetName
+az network vnet subnet create --name $subnetName --address-prefix $subnetPrefix --resource-group $rgName --vnet-name $vnetName
 
 ```
 
