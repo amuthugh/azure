@@ -17,7 +17,7 @@ export vnetAddPrefix=10.9.16.0/20
 export subnetName=gg-ex-rnd-db-01-subnet
 export subnetPrefix=10.9.16.0/26
 export nodeVmSize=Standard_D2as_v5
-export tagsSn="Product=Exto Customer=exto Environment=Non-Prod HasNexus=No Applications=exto-platform, Bolo, Postgres"
+export tagsSn="Product=Exto Customer=exto Environment=Non-Prod HasNexus=No Applications=exto-platform,Bolo,Postgres"
 
 ```
 
