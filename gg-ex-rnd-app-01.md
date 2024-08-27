@@ -30,9 +30,10 @@ az group create --name $rgName --location $location --tags $tagsSn
 
 ```
 az network vnet create --resource-group $rgName --name $vnetName --address-prefixes $vnetAddPrefix --subnet-name $subnetName --subnet-prefix $subnetPrefix --tags $tagsSn
+```
 
 If Vnet already created, subnet will be created using the below command,
-
+```
 az network vnet subnet create --name $subnetName --resource-group $rgName --vnet-name $vnetName
 
 ```
